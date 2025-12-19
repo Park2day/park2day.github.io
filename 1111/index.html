@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ParkFlow — Secure Parking Checkout</title>
+  <meta name="description" content="Pay for parking securely. Enter vehicle details and choose duration." />
+
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel-2: rgba(255,255,255,.09);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --subtle: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 14px 45px rgba(0,0,0,.45);
+      --radius: 18px;
+
+      --brand: #8b5cf6;      /* purple */
+      --brand2: #22c55e;     /* green */
+      --warn: #f59e0b;       /* amber */
+      --danger: #ef4444;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 20% 20%, rgba(139,92,246,.22), transparent 55%),
+        radial-gradient(900px 600px at 80% 0%, rgba(34,197,94,.16), transparent 50%),
+        radial-gradient(700px 500px at 80% 90%, rgba(56,189,248,.14), transparent 55%),
+        linear-gradient(180deg, #050812, var(--bg));
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:40px 16px 56px;
+    }
+
+    .container{
+      width:min(1020px, 100%);
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+    }
+
+    @media (max-width: 920px){
+      .container{grid-template-columns:1fr}
+      .wrap{padding-top:24px}
+    }
+
+    .topbar{
+      grid-column: 1 / -1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 6px 0;
+      gap:12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    .logo{
+      width:34px;height:34px;
+      border-radius:12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%),
+        linear-gradient(135deg, var(--brand), #38bdf8);
+      box-shadow: 0 10px 30px rgba(139,92,246,.25);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute;
+      inset:10px;
+      border-radius:9px;
+      background: rgba(10,12,20,.35);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(6px);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: var(--panel);
+      border:1px solid var(--border);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .pill b{color:var(--text); font-weight:650}
+
+    .card{
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,.04));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .card .head{
+      padding:16px 16px 0;
+    }
+    .card .body{
+      padding:16px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 12px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .badge{
+      font-size:12px;
+      color: rgba(255,255,255,.85);
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+    }
+
+    /* Lot card header */
+    .lot-hero{
+      display:grid;
+      grid-template-columns: 150px 1fr;
+      gap:14px;
+      padding:16px;
+      border-bottom:1px solid var(--subtle);
+      background:
+        radial-gradient(500px 220px at 10% 0%, rgba(139,92,246,.18), transparent 55%),
+        radial-gradient(500px 220px at 90% 0%, rgba(34,197,94,.12), transparent 55%);
+    }
+
+    @media (max-width: 520px){
+      .lot-hero{grid-template-columns: 1fr}
+    }
+
+    .lot-image{
+      width:100%;
+      height:120px;
+      border-radius: 16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      position:relative;
+    }
+
+    .lot-image img{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+      filter:saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .lot-meta{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+    }
+
+    .lot-id{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .lot-id .big{
+      font-size:28px;
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+    .lot-id .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .lot-name{
+      font-size:16px;
+      font-weight:700;
+      margin:0;
+    }
+    .lot-address{
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    .desc{
+      margin-top:6px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size:12px;
+      color: rgba(255,255,255,.86);
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    /* Form */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 520px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color: var(--muted);
+      margin: 0 0 6px;
+      letter-spacing:.2px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,12,20,.45);
+      color: var(--text);
+      outline:none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+    }
+
+    input::placeholder{color: rgba(255,255,255,.40)}
+    input:focus, select:focus{
+      border-color: rgba(139,92,246,.55);
+      box-shadow: 0 0 0 4px rgba(139,92,246,.18);
+    }
+
+    .hint{
+      font-size:12px;
+      color: rgba(255,255,255,.55);
+      margin-top:2px;
+    }
+
+    /* Duration */
+    .duration-box{
+      padding:16px;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+    }
+
+    .duration-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:10px;
+    }
+
+    .duration-top .k{
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 4px;
+      text-transform:uppercase;
+      letter-spacing:.25px;
+      font-weight:700;
+    }
+    .duration-top .v{
+      margin:0;
+      font-size:16px;
+      font-weight:750;
+    }
+
+    .until{
+      font-size:12px;
+      color: rgba(255,255,255,.70);
+      margin-top:2px;
+      line-height:1.45;
+    }
+
+    input[type="range"]{
+      appearance:none;
+      width:100%;
+      height:8px;
+      border-radius:999px;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.12);
+      padding:0;
+      margin: 10px 0 6px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb{
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background: linear-gradient(135deg, var(--brand), #38bdf8);
+      border:1px solid rgba(255,255,255,.35);
+      box-shadow: 0 10px 25px rgba(139,92,246,.25);
+      cursor:pointer;
+    }
+
+    .ticks{
+      display:flex;
+      justify-content:space-between;
+      font-size:11px;
+      color: rgba(255,255,255,.52);
+    }
+
+    /* Right summary */
+    .summary{
+      position:sticky;
+      top:18px;
+      align-self:start;
+    }
+    @media (max-width: 920px){
+      .summary{position:relative; top:auto}
+    }
+
+    .summary .body{padding:16px}
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      font-size:14px;
+    }
+    .row:last-child{border-bottom:none}
+    .row .label{color: rgba(255,255,255,.72)}
+    .row .value{font-weight:700}
+
+    .total{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:14px;
+      padding:14px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(500px 160px at 20% 0%, rgba(34,197,94,.18), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .total .label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      color: rgba(255,255,255,.62);
+      margin:0 0 4px;
+      font-weight:700;
+    }
+    .total .big{
+      margin:0;
+      font-size:28px;
+      font-weight:850;
+      letter-spacing:.2px;
+    }
+
+    .btn{
+      width:100%;
+      margin-top:14px;
+      padding:13px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(135deg, var(--brand), #38bdf8);
+      color: white;
+      font-weight:800;
+      letter-spacing:.2px;
+      cursor:pointer;
+      box-shadow: 0 18px 45px rgba(139,92,246,.25);
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover{filter:brightness(1.06)}
+    .btn:active{transform: translateY(1px)}
+    .btn:disabled{
+      cursor:not-allowed;
+      opacity:.55;
+      filter:saturate(.7);
+      box-shadow:none;
+    }
+
+    .mini{
+      font-size:12px;
+      color: rgba(255,255,255,.62);
+      margin-top:10px;
+      line-height:1.35;
+    }
+
+    .status{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      margin-top:12px;
+      color: rgba(255,255,255,.78);
+      font-size:13px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      margin-top:4px;
+      background: var(--brand2);
+      box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+      flex:0 0 auto;
+    }
+
+    footer{
+      grid-column: 1 / -1;
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      margin-top:6px;
+      color: rgba(255,255,255,.52);
+      font-size:12px;
+      flex-wrap:wrap;
+      padding:8px 0 0;
+    }
+    footer a{
+      color: rgba(255,255,255,.70);
+      text-decoration:none;
+      border-bottom:1px dotted rgba(255,255,255,.35);
+    }
+    footer a:hover{color:white}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="container">
+
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <div style="font-size:15px; font-weight:800; line-height:1.1">ParkFlow</div>
+            <div style="font-size:12px; color: var(--muted)">Fast, secure parking payments</div>
+          </div>
+        </div>
+
+        <div class="pill" title="QR scan → checkout">
+          <span>Lot:</span> <b id="pillLotCode">—</b>
+        </div>
+      </div>
+
+      <!-- LEFT -->
+      <div class="card">
+        <div class="lot-hero">
+          <div class="lot-image">
+            <img id="lotImage" alt="Parking lot"
+                 src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80">
+          </div>
+
+          <div class="lot-meta">
+            <div class="lot-id">
+              <div class="big" id="lotCode">1111</div>
+              <div class="small">Scan-to-pay checkout</div>
+            </div>
+
+            <p class="lot-name" id="lotName">Horton Lot</p>
+            <p class="lot-address" id="lotAddress">2901 Canton St, Dallas, TX 75226, USA</p>
+
+            <div class="desc">
+              <span class="chip" id="lotDesc">18-space surface parking lot</span>
+              <span class="chip">Contactless</span>
+              <span class="chip">Receipts by email</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div class="section-title">
+            <h2>Your details</h2>
+            <span class="badge">Optional receipt</span>
+          </div>
+
+          <div class="field">
+            <label for="email">Email address for receipt</label>
+            <input id="email" type="email" placeholder="you@domain.com" autocomplete="email" />
+            <div class="hint">We’ll only use this to send your parking receipt.</div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="section-title">
+            <h2>Vehicle details</h2>
+            <span class="badge">Required</span>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="plate">Plate</label>
+              <input id="plate" type="text" placeholder="ABC1234" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="country">Country</label>
+              <select id="country">
+                <option value="US" selected>United States of America</option>
+                <option value="CA">Canada</option>
+                <option value="MX">Mexico</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="state">State</label>
+              <select id="state">
+                <option value="" disabled selected>Select state</option>
+              </select>
+              <div class="hint">Tip: type a letter to jump (e.g., “T” for Texas).</div>
+            </div>
+
+            <div class="field">
+              <label for="space">Space / Spot (optional)</label>
+              <input id="space" type="text" placeholder="e.g., 12" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="section-title">
+            <h2>When do you want to park until?</h2>
+            <span class="badge">Live CT time</span>
+          </div>
+
+          <div class="duration-box">
+            <div class="duration-top">
+              <div>
+                <p class="k">Duration</p>
+                <p class="v"><span id="durationHours">12</span> hours</p>
+                <div class="until">
+                  Starts at: <b id="parkStart">—</b><br />
+                  Park until: <b id="parkUntil">—</b>
+                </div>
+              </div>
+
+              <div style="text-align:right">
+                <p class="k">Rate</p>
+                <p class="v">$<span id="ratePerHour">2.00</span>/hr</p>
+                <div class="until">Rounded to nearest hour</div>
+              </div>
+            </div>
+
+            <input id="duration" type="range" min="1" max="24" step="1" value="12" />
+            <div class="ticks">
+              <span>1h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span>
+            </div>
+          </div>
+
+          <div class="status">
+            <div class="dot" aria-hidden="true"></div>
+            <div>
+              <div style="font-weight:750; margin-bottom:2px">Secure checkout</div>
+              <div style="color: rgba(255,255,255,.62)">
+                Payments will be processed by your provider once you connect backend checkout.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card summary">
+        <div class="head">
+          <div class="section-title" style="margin-bottom:6px">
+            <h2>Payment</h2>
+            <span class="badge">USD</span>
+          </div>
+        </div>
+
+        <div class="body">
+          <div class="field">
+            <label for="promo">Promotion code</label>
+            <div style="display:flex; gap:10px">
+              <input id="promo" type="text" placeholder="Enter code" style="flex:1" />
+              <button class="btn" id="applyPromoBtn" type="button"
+                      style="width:auto; padding:12px 14px; border-radius:14px; font-weight:800; background: rgba(255,255,255,.08); box-shadow:none">
+                Apply
+              </button>
+            </div>
+            <div class="hint" id="promoHint">Try <b>PARK5</b> for a sample discount.</div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="row">
+            <div class="label">Parking subtotal</div>
+            <div class="value">$<span id="subtotal">10.00</span></div>
+          </div>
+
+          <div class="row">
+            <div class="label">Convenience fee</div>
+            <div class="value">$<span id="fee">3.00</span></div>
+          </div>
+
+          <div class="row" id="discountRow" style="display:none">
+            <div class="label">Discount</div>
+            <div class="value" style="color: rgba(34,197,94,.95)">- $<span id="discount">0.00</span></div>
+          </div>
+
+          <div class="total">
+            <div>
+              <p class="label">Total charge</p>
+              <p class="big">$<span id="total">13.00</span></p>
+            </div>
+            <div style="text-align:right; font-size:12px; color: rgba(255,255,255,.62)">
+              <div>Includes taxes where applicable</div>
+              <div id="paySummary" style="margin-top:4px; font-weight:700; color: rgba(255,255,255,.82)">—</div>
+            </div>
+          </div>
+
+          <button class="btn" id="payBtn" type="button" disabled>Pay now</button>
+
+          <div class="mini">
+            By continuing, you agree to the <a href="#" onclick="alert('Hook this to your real Terms page later.')">Terms</a> and
+            <a href="#" onclick="alert('Hook this to your real Privacy page later.')">Privacy Policy</a>.
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <span>© <span id="year"></span> ParkFlow</span>
+        <a href="#" onclick="alert('Support page placeholder')">Support</a>
+        <a href="#" onclick="alert('Privacy page placeholder')">Privacy</a>
+        <a href="#" onclick="alert('Terms page placeholder')">Terms</a>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function money(n){ return Number(n).toFixed(2); }
+
+    // CT (America/Chicago) live time helpers
+    function nowCT() {
+      return new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })
+      );
+    }
+    function formatCT(date) {
+      return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "America/Chicago"
+      }) + " CT";
+    }
+
+    const US_STATES = [
+      ["AL","Alabama"], ["AK","Alaska"], ["AZ","Arizona"], ["AR","Arkansas"],
+      ["CA","California"], ["CO","Colorado"], ["CT","Connecticut"], ["DE","Delaware"],
+      ["FL","Florida"], ["GA","Georgia"], ["HI","Hawaii"], ["ID","Idaho"],
+      ["IL","Illinois"], ["IN","Indiana"], ["IA","Iowa"], ["KS","Kansas"],
+      ["KY","Kentucky"], ["LA","Louisiana"], ["ME","Maine"], ["MD","Maryland"],
+      ["MA","Massachusetts"], ["MI","Michigan"], ["MN","Minnesota"], ["MS","Mississippi"],
+      ["MO","Missouri"], ["MT","Montana"], ["NE","Nebraska"], ["NV","Nevada"],
+      ["NH","New Hampshire"], ["NJ","New Jersey"], ["NM","New Mexico"], ["NY","New York"],
+      ["NC","North Carolina"], ["ND","North Dakota"], ["OH","Ohio"], ["OK","Oklahoma"],
+      ["OR","Oregon"], ["PA","Pennsylvania"], ["RI","Rhode Island"],
+      ["SC","South Carolina"], ["SD","South Dakota"], ["TN","Tennessee"],
+      ["TX","Texas"], ["UT","Utah"], ["VT","Vermont"], ["VA","Virginia"],
+      ["WA","Washington"], ["WV","West Virginia"], ["WI","Wisconsin"], ["WY","Wyoming"]
+    ];
+
+    function initStates() {
+      const stateSelect = $("state");
+
+      US_STATES.forEach(([abbr, name]) => {
+        const opt = document.createElement("option");
+        opt.value = abbr;
+        opt.textContent = name;
+        stateSelect.appendChild(opt);
+      });
+
+      // Type-to-jump: supports first letter and quick multi-letter (e.g., "Ne" -> New...)
+      let buffer = "";
+      let bufferTimeout;
+
+      stateSelect.addEventListener("keydown", (e) => {
+        if (e.key.length === 1 && /[a-z]/i.test(e.key)) {
+          buffer += e.key.toLowerCase();
+
+          const options = [...stateSelect.options];
+          const match = options.find(o => o.textContent.toLowerCase().startsWith(buffer));
+          if (match) stateSelect.value = match.value;
+
+          clearTimeout(bufferTimeout);
+          bufferTimeout = setTimeout(() => buffer = "", 650);
+        }
+      });
+    }
+
+    // Demo lots (4-digit codes)
+    const lots = {
+      "1111": {
+        code: "1111",
+        name: "Horton Lot",
+        address: "2901 Canton St, Dallas, TX 75226, USA",
+        desc: "18-space surface parking lot",
+        ratePerHour: 2.00,
+        feeFlat: 3.00,
+        imageUrl: "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1200&q=80"
+      }
+    };
+
+    let appliedDiscount = 0;
+    let promoApplied = null;
+
+    function getLotCodeFromURL(){
+      // Supports:
+      //  - ?lot=1111
+      //  - /1111 (if you host with a router)
+      //  - default 1111
+      const url = new URL(window.location.href);
+      const pathSeg = url.pathname.split("/").filter(Boolean);
+      const last = pathSeg[pathSeg.length - 1];
+      const looksNumeric4 = last && /^\d{4}$/.test(last);
+
+      if (looksNumeric4) return last;
+      if (url.searchParams.get("lot")) return url.searchParams.get("lot");
+      return "1111";
+    }
+
+    function loadLot(){
+      const lotCode = getLotCodeFromURL();
+      const lot = lots[lotCode] || lots["1111"];
+
+      $("lotCode").textContent = lot.code;
+      $("pillLotCode").textContent = lot.code;
+      $("lotName").textContent = lot.name;
+      $("lotAddress").textContent = lot.address;
+      $("lotDesc").textContent = lot.desc;
+      $("ratePerHour").textContent = money(lot.ratePerHour);
+      $("fee").textContent = money(lot.feeFlat);
+      $("lotImage").src = lot.imageUrl;
+
+      return lot;
+    }
+
+    function calcPricing(lot){
+      const hours = Number($("duration").value);
+
+      // Live CT start time + derived end time
+      const start = nowCT();
+      const end = new Date(start.getTime() + hours * 60 * 60 * 1000);
+
+      $("durationHours").textContent = hours;
+      $("parkStart").textContent = formatCT(start);
+      $("parkUntil").textContent = formatCT(end);
+
+      const subtotal = hours * lot.ratePerHour;
+      const fee = lot.feeFlat;
+      const total = Math.max(0, subtotal + fee - appliedDiscount);
+
+      $("subtotal").textContent = money(subtotal);
+      $("fee").textContent = money(fee);
+      $("discount").textContent = money(appliedDiscount);
+      $("total").textContent = money(total);
+
+      $("paySummary").textContent = `${hours}h parking · Plate required`;
+
+      const plateOk = $("plate").value.trim().length >= 2;
+      const stateOk = !!$("state").value;
+      $("payBtn").disabled = !(plateOk && stateOk);
+    }
+
+    function applyPromo(lot){
+      const code = $("promo").value.trim().toUpperCase();
+
+      appliedDiscount = 0;
+      promoApplied = null;
+
+      const hours = Number($("duration").value);
+      const subtotal = hours * lot.ratePerHour;
+
+      if (!code){
+        $("promoHint").innerHTML = `Try <b>PARK5</b> for a sample discount.`;
+        $("discountRow").style.display = "none";
+        calcPricing(lot);
+        return;
+      }
+
+      if (code === "PARK5" && subtotal >= 10){
+        appliedDiscount = 5;
+        promoApplied = code;
+      } else if (code === "HOUR1" && hours >= 1){
+        appliedDiscount = lot.ratePerHour;
+        promoApplied = code;
+      } else {
+        $("promoHint").innerHTML = `<span style="color: rgba(245,158,11,.95); font-weight:700">Code not valid</span> — check and try again.`;
+        $("discountRow").style.display = "none";
+        calcPricing(lot);
+        return;
+      }
+
+      $("promoHint").innerHTML = `<span style="color: rgba(34,197,94,.95); font-weight:800">Applied:</span> <b>${promoApplied}</b>`;
+      $("discountRow").style.display = appliedDiscount > 0 ? "flex" : "none";
+      calcPricing(lot);
+    }
+
+    function handlePay(lot){
+      const payload = {
+        lotCode: lot.code,
+        email: $("email").value.trim() || null,
+        vehicle: {
+          plate: $("plate").value.trim(),
+          country: $("country").value,
+          state: $("state").value,
+          space: $("space").value.trim() || null
+        },
+        durationHours: Number($("duration").value),
+        promoCode: promoApplied,
+        pricing: {
+          ratePerHour: lot.ratePerHour,
+          fee: lot.feeFlat,
+          discount: appliedDiscount,
+          currency: "USD"
+        },
+        startTimeCT: $("parkStart").textContent,
+        endTimeCT: $("parkUntil").textContent,
+        createdAt: new Date().toISOString()
+      };
+
+      alert("Demo payload (send this to backend next):\n\n" + JSON.stringify(payload, null, 2));
+    }
+
+    // ---- Boot ----
+    initStates();
+    const lot = loadLot();
+    $("year").textContent = new Date().getFullYear();
+
+    // Initialize pricing/time
+    calcPricing(lot);
+
+    // Update on interactions
+    $("duration").addEventListener("input", () => {
+      if (promoApplied) applyPromo(lot);
+      else calcPricing(lot);
+    });
+
+    $("plate").addEventListener("input", () => calcPricing(lot));
+    $("state").addEventListener("change", () => calcPricing(lot));
+
+    $("applyPromoBtn").addEventListener("click", () => applyPromo(lot));
+    $("promo").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") applyPromo(lot);
+    });
+
+    $("payBtn").addEventListener("click", () => handlePay(lot));
+
+    // Keep the "Starts at" time live (updates every minute)
+    setInterval(() => calcPricing(lot), 60 * 1000);
+  </script>
+</body>
+</html>
