@@ -3,164 +3,196 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ParkFlow — Enter Lot Number</title>
-
+  <title>Park2Day — Premium Parking Solutions</title>
   <style>
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: linear-gradient(180deg, #f8fafc, #eef2ff);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      color:#0f172a;
+    :root {
+      --primary: #22c55e;
+      --primary-dark: #16a34a;
+      --secondary: #6366f1;
+      --dark: #0f172a;
+      --slate: #475569;
+      --light: #f8fafc;
     }
 
-    .card{
-      background:#fff;
-      width:min(420px, 92%);
-      padding:32px 28px;
-      border-radius:16px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.12);
-      text-align:center;
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    .icon{
-      width:84px;
-      height:84px;
-      margin:0 auto 18px;
-      border-radius:50%;
-      background: linear-gradient(135deg, #6366f1, #22c55e);
-      display:grid;
-      place-items:center;
-      color:#fff;
-      font-size:36px;
-      font-weight:900;
+    header {
+      padding: 2rem;
+      text-align: center;
+      background: white;
     }
 
-    h1{
-      margin:0 0 8px;
-      font-size:22px;
-      font-weight:800;
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
     }
 
-    p{
-      margin:0 0 22px;
-      color:#475569;
-      font-size:14px;
+    /* Simple CSS version of your logo icon */
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--primary);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: var(--primary);
+      position: relative;
     }
 
-    .inputs{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      margin-bottom:22px;
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    .inputs input{
-      width:56px;
-      height:64px;
-      text-align:center;
-      font-size:26px;
-      font-weight:800;
-      border-radius:12px;
-      border:2px solid #c7d2fe;
-      outline:none;
-      transition:.15s;
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
     }
 
-    .inputs input:focus{
-      border-color:#6366f1;
-      box-shadow:0 0 0 4px rgba(99,102,241,.2);
+    .hero p {
+      color: var(--slate);
+      font-size: 1.2rem;
+      line-height: 1.6;
     }
 
-    button{
-      width:100%;
-      padding:14px;
-      border-radius:12px;
-      border:none;
-      background:#22c55e;
-      color:#fff;
-      font-size:16px;
-      font-weight:800;
-      cursor:pointer;
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 4rem;
     }
 
-    button:disabled{
-      opacity:.5;
-      cursor:not-allowed;
+    .option-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 24px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     }
 
-    footer{
-      margin-top:18px;
-      font-size:12px;
-      color:#64748b;
-      text-align:center;
+    .option-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
     }
 
-    footer a{
-      color:#475569;
-      text-decoration:none;
-      margin:0 6px;
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .option-card h2 {
+      margin: 0 0 1rem;
+      font-size: 1.5rem;
+    }
+
+    .option-card p {
+      color: var(--slate);
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      padding: 12px 32px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .info-section {
+      background: #f1f5f9;
+      padding: 4rem 1.5rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 2rem;
+      text-align: center;
+      color: var(--slate);
+      font-size: 0.9rem;
     }
   </style>
 </head>
-
 <body>
 
-  <div class="card">
-    <div class="icon">P</div>
-
-    <h1>Enter Lot Number</h1>
-    <p>Find your parking location to continue</p>
-
-    <div class="inputs">
-      <input maxlength="1" inputmode="numeric" />
-      <input maxlength="1" inputmode="numeric" />
-      <input maxlength="1" inputmode="numeric" />
-      <input maxlength="1" inputmode="numeric" />
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">QR</div>
+      <div style="font-size: 24px; font-weight: 800;">Park2Day</div>
     </div>
+  </header>
 
-    <button id="submitBtn" disabled>Continue</button>
+  <section class="hero">
+    <div class="badge">Based in Dallas, Texas</div>
+    <h1>Effortless parking for every destination.</h1>
+    <p>Whether you're visiting a local lot or coming home to your apartment, we've made paying for parking as simple as a scan.</p>
+  </section>
+
+  <div class="options-grid">
+    <a href="./parking/" class="option-card">
+      <div class="card-icon">📍</div>
+      <h2>Public Parking</h2>
+      <p>Enter a lot number to pay for hourly or daily parking at any of our Horton Lot locations.</p>
+      <span class="btn">Enter Portal</span>
+    </a>
+
+    <a href="./apartments/" class="option-card">
+      <div class="card-icon">🏢</div>
+      <h2>Apartment Parking</h2>
+      <p>Register your guest vehicle or manage your resident parking permit for Dallas area complexes.</p>
+      <span class="btn" style="background: var(--dark);">Coming Soon</span>
+    </a>
   </div>
 
+  <section class="info-section">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <h3>Two Ways to Pay</h3>
+      <p>Choose between our <b>Public Lot Portal</b> for on-the-go parking or our <b>Apartment Portal</b> for long-term residential solutions. Both systems are secure, fast, and encrypted.</p>
+    </div>
+  </section>
+
   <footer>
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Terms</a> |
-    <a href="#">Support</a>
+    &copy; 2026 Park2Day. All rights reserved. <br>
+    Proudly serving Dallas, Texas.
   </footer>
-
-  <script>
-    const inputs = document.querySelectorAll(".inputs input");
-    const submitBtn = document.getElementById("submitBtn");
-
-    inputs.forEach((input, idx) => {
-      input.addEventListener("input", () => {
-        if (input.value && idx < inputs.length - 1) {
-          inputs[idx + 1].focus();
-        }
-        validate();
-      });
-
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Backspace" && !input.value && idx > 0) {
-          inputs[idx - 1].focus();
-        }
-      });
-    });
-
-    function validate(){
-      const code = [...inputs].map(i => i.value).join("");
-      submitBtn.disabled = code.length !== 4;
-    }
-
-    submitBtn.addEventListener("click", () => {
-      const lotCode = [...inputs].map(i => i.value).join("");
-      window.location.href = `/parking/${lotCode}/`;
-    });
-  </script>
 
 </body>
 </html>
