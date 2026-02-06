@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Park2Day — Apartment Parking</title>
+  <title>Park2Day — Apartment Portal</title>
   <style>
     :root {
       --primary: #22c55e;
@@ -16,23 +16,16 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
-      background: linear-gradient(180deg, #f8fafc, #eff6ff);
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9);
       color: var(--dark);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 20px;
     }
 
-    .container {
-      width: min(500px, 100%);
-      margin-top: 5vh;
-    }
-
-    .logo-header {
+    header {
+      padding: 1.5rem;
       text-align: center;
-      margin-bottom: 40px;
     }
 
     .logo-icon {
@@ -43,165 +36,135 @@
       place-items: center;
       font-weight: 900;
       color: var(--primary);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    .card {
-      background: white;
-      padding: 32px;
-      border-radius: 24px;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
-      border: 1px solid var(--border);
-    }
-
-    h1 {
-      font-size: 24px;
-      font-weight: 800;
-      margin: 0 0 8px;
-      text-align: center;
-    }
-
-    p {
-      color: var(--slate);
-      font-size: 14px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    /* Search Input Styling */
-    .search-wrapper {
-      position: relative;
-    }
-
-    input#propertySearch {
-      width: 100%;
-      padding: 16px 20px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      outline: none;
-      transition: all 0.2s;
-      box-sizing: border-box;
-      text-transform: lowercase; /* Visual lowercase */
-    }
-
-    input#propertySearch:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
-    }
-
-    /* Results List */
-    .results-list {
-      margin-top: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-      border-radius: 12px;
-      display: none; /* Hidden until typing */
-    }
-
-    .property-item {
-      padding: 14px 20px;
-      background: white;
-      border-bottom: 1px solid var(--light);
-      cursor: pointer;
+    .main-content {
+      flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
-      transition: background 0.2s;
-      text-transform: lowercase; /* Forces lowercase display */
-    }
-
-    .property-item:last-child { border-bottom: none; }
-
-    .property-item:hover {
-      background: #f0fdf4;
-      color: var(--primary);
-    }
-
-    .property-item .icon { font-size: 18px; }
-
-    .no-results {
+      justify-content: center;
       padding: 20px;
       text-align: center;
-      font-size: 14px;
+    }
+
+    .hero-text {
+      margin-bottom: 40px;
+    }
+
+    .hero-text h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-text p {
       color: var(--slate);
+      margin-top: 10px;
+    }
+
+    .choice-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: min(800px, 100%);
+    }
+
+    .choice-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 24px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .choice-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      background: #f0fdf4;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .choice-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .choice-card p {
+      font-size: 15px;
+      color: var(--slate);
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .action-label {
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     footer {
-      margin-top: auto;
-      padding: 40px 0;
-      font-size: 12px;
-      color: var(--slate);
+      padding: 2rem;
       text-align: center;
+      color: var(--slate);
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="logo-header">
-      <div class="logo-icon">P</div>
-      <div style="font-weight: 800; font-size: 18px;">Park2Day</div>
+  <header>
+    <div class="logo-icon">P</div>
+    <div style="font-weight: 800; font-size: 14px; color: var(--slate)">Park2Day</div>
+  </header>
+
+  <main class="main-content">
+    <div class="hero-text">
+      <h1>apartment parking portal</h1>
+      <p>select your registration type to continue</p>
     </div>
 
-    <div class="card">
-      <h1>apartment parking</h1>
-      <p>search for your complex to register your vehicle</p>
+    <div class="choice-container">
+      <a href="./visitor/" class="choice-card">
+        <div class="icon-circle">🚗</div>
+        <h2>i'm a visitor</h2>
+        <p>register your vehicle for short-term guest parking at a resident's complex.</p>
+        <div class="action-label">start visiting →</div>
+      </a>
 
-      <div class="search-wrapper">
-        <input type="text" id="propertySearch" placeholder="start typing property name..." autocomplete="off">
-        
-        <div id="resultsList" class="results-list">
-          </div>
-      </div>
+      <a href="./resident/" class="choice-card">
+        <div class="icon-circle">🏠</div>
+        <h2>i'm a resident</h2>
+        <p>register your primary vehicle or manage your permanent parking permit.</p>
+        <div class="action-label">resident login →</div>
+      </a>
     </div>
-  </div>
+  </main>
 
   <footer>
     &copy; 2026 park2day — dallas, texas
   </footer>
 
-  <script>
-    const properties = [
-      "gala apartments",
-      "abuboo studios",
-      "highlandpark apartments",
-      "uptown suites"
-    ];
-
-    const searchInput = document.getElementById('propertySearch');
-    const resultsList = document.getElementById('resultsList');
-
-    searchInput.addEventListener('input', (e) => {
-      const val = e.target.value.toLowerCase();
-      resultsList.innerHTML = '';
-      
-      if (val.length > 0) {
-        const filtered = properties.filter(p => p.includes(val));
-        
-        if (filtered.length > 0) {
-          resultsList.style.display = 'block';
-          filtered.forEach(prop => {
-            const div = document.createElement('div');
-            div.className = 'property-item';
-            div.innerHTML = `<span class="icon">🏢</span> <span>${prop}</span>`;
-            div.onclick = () => selectProperty(prop);
-            resultsList.appendChild(div);
-          });
-        } else {
-          resultsList.style.display = 'block';
-          resultsList.innerHTML = '<div class="no-results">no properties found</div>';
-        }
-      } else {
-        resultsList.style.display = 'none';
-      }
-    });
-
-    function selectProperty(name) {
-      // Clean name for URL (remove spaces)
-      const folderName = name.replace(/\s+/g, '');
-      window.location.href = `./${folderName}/`;
-    }
-  </script>
 </body>
 </html>
