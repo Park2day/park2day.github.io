@@ -122,7 +122,12 @@
       border-radius: 12px;
       font-weight: 700;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: background 0.2s, opacity 0.2s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
     }
 
     .info-section {
@@ -178,7 +183,7 @@
       <div class="card-icon">🏢</div>
       <h2>Apartment Parking</h2>
       <p>Register your guest vehicle or manage your resident parking permit for Dallas area complexes.</p>
-      <span class="btn" style="background: var(--dark);">Coming Soon</span>
+      <span class="btn">Enter Portal</span>
     </a>
   </div>
 
